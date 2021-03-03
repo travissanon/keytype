@@ -1,0 +1,29 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+/* this file is loaded by index.html and styles the page */
+
+.words-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.words {
+  max-width: 720px;
+}
+
+span {
+  font-size: 32px;
+  font-family: 'Roboto Mono', monospace;
+  color: #232a28;
+}
+
+.active {
+  background: #97bafa;
+}
+
+.error {
+  background: #DB5461;
+}
