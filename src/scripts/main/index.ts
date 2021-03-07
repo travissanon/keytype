@@ -1,4 +1,4 @@
-class TypingTest {
+export default class TypingTest {
   words: string;
 
   index: number;
@@ -7,7 +7,7 @@ class TypingTest {
 
   errors: number;
 
-  lastTypedChar: string | null;
+  lastTypedChar: number | null;
 
   targetChar: number | null;
 
@@ -39,13 +39,18 @@ class TypingTest {
 
   setActiveChar() {
     const TAG_ACTIVE = 'active';
-    const getNodeByTag = (node: any, tag: string, i: number) => node.getElementsByTagName(tag)[i];
+    const getNodeByTagName = (node: any, tag: string, i: number) =>
+      node.getElementsByTagName(tag)[i];
     const removeClassFromNode = (node: any, tag: string) => node.classList.remove(tag);
+    const addClassToNode = (node: any, tag: string) => node.classList.add(tag);
 
     if (this.index !== 0) {
-      const node = getNodeByTag(this.DOM.words, 'span', this.index - 1);
-      removeClassFromNode(node, TAG_ACTIVE);
+      const previousNode = getNodeByTagName(this.DOM.words, 'span', this.index - 1);
+      removeClassFromNode(previousNode, TAG_ACTIVE);
     }
+
+    const currentNode = getNodeByTagName(this.DOM.words, 'span', this.index);
+    addClassToNode(currentNode, TAG_ACTIVE);
   }
 
   setTargetChar() {
@@ -68,11 +73,7 @@ class TypingTest {
   createTag(tag: string, val: any, key: number | null = null) {
     const isKey = key ? `key="${key}"` : '';
 
-    return `
-                <${tag} ${isKey}>
-                    ${val}
-                </${tag}>
-            `;
+    return `<${tag} ${isKey}>${val}</${tag}>`;
   }
 
   renderWords() {
@@ -154,6 +155,6 @@ class TypingTest {
     this.renderWords();
     this.setTargetChar();
     this.setActiveChar();
-    this.keypressListener(this.enqueue);
+    this.keypressListener(this.enqueue.bind(this));
   }
 }
