@@ -1,160 +1,191 @@
+import getQuote from "scripts/quote";
+import wpm from "scripts/helpers/wpm";
+import timeInSecs from "scripts/helpers/timeInSecs";
+
+// TODO: Look up an enum guide for css classes
+// TODO: Having some values with the class indicator and some without is a bad idea
+enum ClassNames {
+	ErrorsWrapper = ".indicators__errors-wrapper",
+	SpeedWrapper = ".indicators__speed-wrapper",
+	Value = ".indicators__value",
+	Active = "active",
+}
+
+enum TagNames {
+	Span = "span",
+}
+
 export default class TypingTest {
-  words: string;
+	words: any;
 
-  index: number;
+	index: number;
 
-  speed: number;
+	speed: number;
 
-  errors: number;
+	errors: number;
 
-  lastTypedChar: number | null;
+	lastTypedChar: number | null;
 
-  targetChar: number | null;
+	targetChar: number | null;
 
-  startTime: number | null;
+	startTime: number | null;
 
-  endTime: number | null;
+	endTime: number | null;
 
-  DOM: {
-    words?: any; // #TODO: Change this to whatever the type a DOM node is.
-    indicators?: any;
-  };
+	DOM: {
+		words?: any; // #TODO: Change this to whatever the type a DOM node is.
+		indicators?: any;
+	};
 
-  constructor() {
-    this.words =
-      'at the end of the day you are solely responsible for your success and your failure';
-    this.index = 0;
-    this.speed = 0;
-    this.errors = 0;
-    this.lastTypedChar = null;
-    this.targetChar = null;
-    this.startTime = null;
-    this.endTime = null;
-    this.DOM = {};
-  }
+	constructor() {
+		this.words = "";
+		this.index = 0;
+		this.speed = 0;
+		this.errors = 0;
+		this.lastTypedChar = null;
+		this.targetChar = null;
+		this.startTime = null;
+		this.endTime = null;
+		this.DOM = {};
+	}
 
-  pipe(...fns: any[]) {
-    return (x: any) => [...fns].reduce((acc, f) => f(acc), x);
-  }
+	setActiveChar() {
+		const currentNode = this.DOM.words.getElementsByTagName(TagNames.Span)[
+			this.index
+		];
 
-  setActiveChar() {
-    const TAG_ACTIVE = 'active';
-    const getNodeByTagName = (node: any, tag: string, i: number) =>
-      node.getElementsByTagName(tag)[i];
-    const removeClassFromNode = (node: any, tag: string) => node.classList.remove(tag);
-    const addClassToNode = (node: any, tag: string) => node.classList.add(tag);
+		if (this.index !== 0) {
+			const previousIndex = this.index - 1;
+			const previousNode = this.DOM.words.getElementsByTagName(TagNames.Span)[
+				previousIndex
+			];
 
-    if (this.index !== 0) {
-      const previousNode = getNodeByTagName(this.DOM.words, 'span', this.index - 1);
-      removeClassFromNode(previousNode, TAG_ACTIVE);
-    }
+			previousNode.classList.remove(ClassNames.Active);
+		}
 
-    const currentNode = getNodeByTagName(this.DOM.words, 'span', this.index);
-    addClassToNode(currentNode, TAG_ACTIVE);
-  }
+		currentNode.classList.add(ClassNames.Active);
+	}
 
-  setTargetChar() {
-    const SPACEBAR_KEYCODE = 32;
-    const keyCode = (i: number, str: string) =>
-      str.charCodeAt(i) - SPACEBAR_KEYCODE === 0
-        ? SPACEBAR_KEYCODE
-        : str.charCodeAt(i) - SPACEBAR_KEYCODE;
+	setTargetChar() {
+		const targetChar = this.words[this.index];
 
-    this.targetChar = keyCode(this.index, this.words);
-  }
+		this.targetChar = this.keyCode(targetChar);
+		this.setActiveChar();
+	}
 
-  cacheDOM() {
-    this.DOM.words = document.querySelector('.words');
-    this.DOM.indicators = document.querySelector('.indicators');
-  }
+	keyCode = (char: string) => {
+		const SPACEBAR_KEYCODE = 32;
+		const CHAR_INDEX = 0;
 
-  // bindEvents() {}
+		const charKeyCode = char.charCodeAt(CHAR_INDEX) - SPACEBAR_KEYCODE;
 
-  createTag(tag: string, val: any, key: number | null = null) {
-    const isKey = key ? `key="${key}"` : '';
+		return charKeyCode === 0 ? SPACEBAR_KEYCODE : charKeyCode;
+	};
 
-    return `<${tag} ${isKey}>${val}</${tag}>`;
-  }
+	cacheDOM() {
+		this.DOM.words = document.querySelector(".words");
+		this.DOM.indicators = document.querySelector(".indicators");
+	}
 
-  renderWords() {
-    const tag = 'span';
-    const letters = this.words.split('');
-    const html = `${letters.map((val, i) => this.createTag(tag, val, i)).join('')}`;
+	createTag = (tag: string, val: any, key: number | null = null) => {
+		const isKey = key ? `key="${key}"` : "";
 
-    this.DOM.words.innerHTML = html;
-  }
+		return `<${tag} ${isKey}>${val}</${tag}>`;
+	};
 
-  progress() {
-    const splitStr = (separator: string) => (str: string) => str.split(separator);
-    const count = (a: any) => a.length;
-    const time = (start: number, end: number) => (end - start) / 1000;
-    const wpm = (secs: number) => (wordCount: number) => Math.floor((wordCount / secs) * 60);
-    const wordCount = (str: string) => this.pipe(splitStr(' '), count)(str);
+	renderWords() {
+		const tag = "span";
+		const html = `${this.words
+			.map((val: string, i: number) => this.createTag(tag, val, i))
+			.join("")}`;
 
-    // TODO: Loop up an enum guide for css classes
-    enum ClassIndicators {
-      ErrorsWrapper = '.indicators__errors-wrapper',
-      SpeedWrapper = '.indicators__speed-wrapper',
-      Value = '.indicators__value',
-    }
+		this.DOM.words.innerHTML = html;
+	}
 
-    // TODO: Possibly turn this into a ternary operator
-    if (this.lastTypedChar === this.targetChar) {
-      // TODO: Break this block off into a function
-      const targetSpan = this.DOM.words.getElementsByTagName('span')[this.index];
-      const wordsLength = this.words.length - 1;
+	progress() {
+		const userSelectedCorrectChar = this.lastTypedChar === this.targetChar;
 
-      targetSpan.setAttribute('style', 'color: #a6a8be');
+		if (userSelectedCorrectChar) {
+			this.validateChar();
+		} else {
+			this.invalidateChar();
+		}
+	}
 
-      if (wordsLength !== this.index) {
-        this.index += 1;
-        this.setTargetChar();
-        this.setActiveChar();
-      } else {
-        this.endTime = Date.now();
-        const result = wpm(time(this.startTime, this.endTime))(wordCount(this.words));
+	validateChar() {
+		const targetSpan = this.DOM.words.getElementsByTagName("span")[this.index];
+		const wordsLength = this.words.length - 1;
 
-        const speedIndicator = this.DOM.indicators.querySelector(
-          `${ClassIndicators.SpeedWrapper} ${ClassIndicators.Value}`
-        );
-        speedIndicator.innerHTML = result;
-      }
-    } else {
-      // TODO: Break this block off into a function
-      const targetSpan = this.DOM.words.getElementsByTagName('span')[this.index];
-      const errorIndicator = this.DOM.indicators.querySelector(
-        `${ClassIndicators.ErrorsWrapper} ${ClassIndicators.Value}`
-      );
+		targetSpan.setAttribute("style", "color: #a6a8be");
 
-      this.errors += 1;
-      errorIndicator.innerHTML = this.errors;
-      targetSpan.classList.add('error');
-    }
-  }
+		if (wordsLength !== this.index) {
+			this.index += 1;
+			this.setTargetChar();
+		} else {
+			this.endGame();
+		}
+	}
 
-  startTimer() {
-    if (this.startTime === null) {
-      this.startTime = Date.now();
-    }
-  }
+	invalidateChar() {
+		const targetSpan = this.DOM.words.getElementsByTagName("span")[this.index];
+		const errorIndicator = this.DOM.indicators.querySelector(
+			`${ClassNames.ErrorsWrapper} ${ClassNames.Value}`
+		);
 
-  enqueue(event: any) {
-    this.lastTypedChar = event.keyCode;
-    this.startTimer();
-    this.progress();
-  }
+		this.errors += 1;
+		errorIndicator.innerHTML = this.errors;
+		targetSpan.classList.add("error");
+	}
 
-  keypressListener(callback: any) {
-    const EVENT_KEYDOWN = 'keydown';
+	endGame() {
+		this.endTime = Date.now();
+		const endTime = timeInSecs(this.startTime, this.endTime);
+		const wordCount = this.words.length;
+		const result = wpm(endTime, wordCount);
 
-    return document.addEventListener(EVENT_KEYDOWN, (event) => callback(event));
-  }
+		const speedIndicator = this.DOM.indicators.querySelector(
+			`${ClassNames.SpeedWrapper} ${ClassNames.Value}`
+		);
+		speedIndicator.innerHTML = result;
+	}
 
-  init() {
-    this.cacheDOM();
-    this.renderWords();
-    this.setTargetChar();
-    this.setActiveChar();
-    this.keypressListener(this.enqueue.bind(this));
-  }
+	startTimer() {
+		if (this.startTime === null) {
+			this.startTime = Date.now();
+		}
+	}
+
+	enqueue(event: any) {
+		this.lastTypedChar = event.keyCode;
+
+		if (this.startTime === null) {
+			this.startTimer();
+		}
+
+		this.progress();
+	}
+
+	getWords() {
+		return getQuote().then((res: any) => {
+			const letters = res.attributes.text
+				.toLowerCase()
+				.replace(/[.,'\\/#!$%\\^&\\*;:{}=\-_`~()]/g, "")
+				.split("");
+			this.words = letters;
+		});
+	}
+
+	keypressListener = (callback: any) => {
+		const EVENT_KEYDOWN = "keydown";
+		return document.addEventListener(EVENT_KEYDOWN, (event) => callback(event));
+	};
+
+	init() {
+		this.getWords().then(() => {
+			this.cacheDOM();
+			this.renderWords();
+			this.setTargetChar();
+			this.keypressListener(this.enqueue.bind(this));
+		});
+	}
 }
