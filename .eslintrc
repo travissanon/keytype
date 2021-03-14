@@ -1,11 +1,29 @@
 {
-    "extends": ["airbnb", "prettier"],
-    "plugins": ["prettier", "@typescript-eslint"],
+    "extends": ["airbnb-typescript", "prettier"],
+    "plugins": ["prettier", "@typescript-eslint", "import"],
+    "parser": "@typescript-eslint/parser",
+    "rules": {
+      "prettier/prettier": ["error"],
+      // turn on errors for missing imports
+      "import/no-unresolved": "error"
+    },
+    "settings": {
+      "import/parsers": {
+        "@typescript-eslint/parser": [".ts", ".tsx"]
+      },
+      "import/resolver": {
+        "typescript": {
+          "alwaysTryTypes": true, // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+          // use <root>/path/to/folder/tsconfig.json
+          "project": "./tsconfig.json"
+        }
+      }
+    },
     "env": {
         "browser": true,
         "es6": true
     },
-    "rules": {
-      "prettier/prettier": ["error"]
+    "parserOptions": {
+      "project": "./tsconfig.json"
     }
 }
