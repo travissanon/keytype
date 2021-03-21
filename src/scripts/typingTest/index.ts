@@ -1,9 +1,10 @@
-import getQuote from "scripts/quote";
-import wpm from "scripts/helpers/wpm";
-import timeInSecs from "scripts/helpers/timeInSecs";
+import getQuote from "scripts/data/quotes";
+import wpm from "@utils/wpm";
+import timeInMins from "@utils/timeInMins";
+import createTag from "@utils/createTag";
+import keyCode from "@utils/keyCode";
 
-// TODO: Look up an enum guide for css classes
-// TODO: Having some values with the class indicator and some without is a bad idea
+// TODO: Use CSS modules.
 enum ClassNames {
 	ErrorsWrapper = ".indicators__errors-wrapper",
 	SpeedWrapper = ".indicators__speed-wrapper",
@@ -16,7 +17,7 @@ enum TagNames {
 }
 
 export default class TypingTest {
-	words: any;
+	letters: any;
 
 	index: number;
 
@@ -38,7 +39,7 @@ export default class TypingTest {
 	};
 
 	constructor() {
-		this.words = "";
+		this.letters = "";
 		this.index = 0;
 		this.speed = 0;
 		this.errors = 0;
@@ -67,36 +68,21 @@ export default class TypingTest {
 	}
 
 	setTargetChar() {
-		const targetChar = this.words[this.index];
+		const targetChar = this.letters[this.index];
 
-		this.targetChar = this.keyCode(targetChar);
+		this.targetChar = keyCode(targetChar);
 		this.setActiveChar();
 	}
-
-	keyCode = (char: string) => {
-		const SPACEBAR_KEYCODE = 32;
-		const CHAR_INDEX = 0;
-
-		const charKeyCode = char.charCodeAt(CHAR_INDEX) - SPACEBAR_KEYCODE;
-
-		return charKeyCode === 0 ? SPACEBAR_KEYCODE : charKeyCode;
-	};
 
 	cacheDOM() {
 		this.DOM.words = document.querySelector(".words");
 		this.DOM.indicators = document.querySelector(".indicators");
 	}
 
-	createTag = (tag: string, val: any, key: number | null = null) => {
-		const isKey = key ? `key="${key}"` : "";
-
-		return `<${tag} ${isKey}>${val}</${tag}>`;
-	};
-
 	renderWords() {
 		const tag = "span";
-		const html = `${this.words
-			.map((val: string, i: number) => this.createTag(tag, val, i))
+		const html = `${this.letters
+			.map((val: string, i: number) => createTag(tag, val, i))
 			.join("")}`;
 
 		this.DOM.words.innerHTML = html;
@@ -114,7 +100,7 @@ export default class TypingTest {
 
 	validateChar() {
 		const targetSpan = this.DOM.words.getElementsByTagName("span")[this.index];
-		const wordsLength = this.words.length - 1;
+		const wordsLength = this.letters.length - 1;
 
 		targetSpan.setAttribute("style", "color: #a6a8be");
 
@@ -139,9 +125,9 @@ export default class TypingTest {
 
 	endGame() {
 		this.endTime = Date.now();
-		const endTime = timeInSecs(this.startTime, this.endTime);
-		const wordCount = this.words.length;
-		const result = wpm(endTime, wordCount);
+		const endTime = timeInMins(this.startTime, this.endTime);
+		const charCount = this.letters.length;
+		const result = wpm(endTime, charCount, this.errors);
 
 		const speedIndicator = this.DOM.indicators.querySelector(
 			`${ClassNames.SpeedWrapper} ${ClassNames.Value}`
@@ -171,7 +157,7 @@ export default class TypingTest {
 				.toLowerCase()
 				.replace(/[.,'\\/#!$%\\^&\\*;:{}=\-_`~()]/g, "")
 				.split("");
-			this.words = letters;
+			this.letters = letters;
 		});
 	}
 
