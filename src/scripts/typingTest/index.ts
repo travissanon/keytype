@@ -17,21 +17,22 @@ enum TagNames {
 }
 
 export default class TypingTest {
+	// TODO: fix types
 	letters: any;
 
 	index: number;
 
 	speed: number;
 
-	errors: number;
+	errors: any;
 
-	lastTypedChar: number | null;
+	lastTypedChar: any;
 
-	targetChar: number | null;
+	targetChar: any;
 
-	startTime: number | null;
+	startTime: any;
 
-	endTime: number | null;
+	endTime: any;
 
 	DOM: {
 		words?: any; // #TODO: Change this to whatever the type a DOM node is.
@@ -42,7 +43,7 @@ export default class TypingTest {
 		this.letters = "";
 		this.index = 0;
 		this.speed = 0;
-		this.errors = 0;
+		this.errors = {};
 		this.lastTypedChar = null;
 		this.targetChar = null;
 		this.startTime = null;
@@ -118,8 +119,8 @@ export default class TypingTest {
 			`${ClassNames.ErrorsWrapper} ${ClassNames.Value}`
 		);
 
-		this.errors += 1;
-		errorIndicator.innerHTML = this.errors;
+		this.errors[this.index] = true;
+		errorIndicator.innerHTML = Object.keys(this.errors).length;
 		targetSpan.classList.add("error");
 	}
 
@@ -127,7 +128,8 @@ export default class TypingTest {
 		this.endTime = Date.now();
 		const endTime = timeInMins(this.startTime, this.endTime);
 		const charCount = this.letters.length;
-		const result = wpm(endTime, charCount, this.errors);
+		const errCount = Object.keys(this.errors).length;
+		const result = wpm(endTime, charCount, errCount);
 
 		const speedIndicator = this.DOM.indicators.querySelector(
 			`${ClassNames.SpeedWrapper} ${ClassNames.Value}`
@@ -155,7 +157,7 @@ export default class TypingTest {
 		return getQuote().then((res: any) => {
 			const letters = res.attributes.text
 				.toLowerCase()
-				.replace(/[.,'\\/#!$%\\^&\\*;:{}=\-_`~()]/g, "")
+				.replace(/[.,'\\/#!$%\\^&\\*;:{}=\-_`~()?]/g, "")
 				.split("");
 			this.letters = letters;
 		});
