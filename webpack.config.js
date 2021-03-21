@@ -35,8 +35,10 @@ module.exports = {
     ],
     },
     resolve: {
-        modules: ['src', 'node_modules'],
         extensions: ['.ts', '.tsx', '.js', '.scss', '.css'],
+        alias: {
+            "@utils": path.resolve(__dirname, 'src/scripts/utilities')
+        }
     },
     output: {
         filename: "bundle.js",
