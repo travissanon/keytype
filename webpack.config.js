@@ -38,7 +38,10 @@ module.exports = {
         modules: ['src', 'node_modules'],
         extensions: ['.ts', '.tsx', '.js', '.scss', '.css'],
         alias: {
-            "@utils": path.resolve(__dirname, 'src/scripts/utilities')
+            "@utils": path.resolve(__dirname, 'src/scripts/utilities'),
+            "@api": path.resolve(__dirname, 'src/scripts/api'),
+            "@components": path.resolve(__dirname, 'src/scripts/components'),
+            "@styles": path.resolve(__dirname, 'src/styles')
         }
     },
     output: {

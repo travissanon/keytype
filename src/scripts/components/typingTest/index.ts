@@ -1,4 +1,4 @@
-import getQuote from "scripts/data/quotes";
+import getQuote from "@api/getQuote";
 import wpm from "@utils/wpm";
 import timeInMins from "@utils/timeInMins";
 import createTag from "@utils/createTag";
