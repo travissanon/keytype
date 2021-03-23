@@ -1,7 +1,7 @@
-import TypingTest from "./scripts/typingTest";
+import TypingTest from "@components/typingTest";
 
-import "./styles/normalize.css";
-import "./styles/style.scss";
+import "@styles/normalize.css";
+import "@styles/style.scss";
 
 const test = new TypingTest();
 
