@@ -4,6 +4,14 @@ import timeInMins from "@utils/timeInMins";
 import createTag from "@utils/createTag";
 import keyCode from "@utils/keyCode";
 
+interface DOMNode {
+	[key: string]: Element | null;
+}
+
+interface KeyError {
+	[key: number]: boolean;
+}
+
 // TODO: Use CSS modules.
 enum ClassNames {
 	ErrorsWrapper = ".indicators__errors-wrapper",
@@ -17,49 +25,34 @@ enum TagNames {
 }
 
 export default class TypingTest {
-	letters: any;
+	private letters: string[] = [];
 
-	index: number;
+	private index: number = 0;
 
-	speed: number;
+	private speed: number = 0;
 
-	errors: number;
+	private errors: KeyError = {};
 
-	lastTypedChar: number | null;
+	private lastTypedChar: number | null = null;
 
-	targetChar: number | null;
+	private targetChar: number | null = null;
 
-	startTime: number | null;
+	private startTime: number | null = null;
 
-	endTime: number | null;
+	private endTime: number | null = null;
 
-	DOM: {
-		words?: any; // #TODO: Change this to whatever the type a DOM node is.
-		indicators?: any;
-	};
+	private DOM: DOMNode = {};
 
-	constructor() {
-		this.letters = "";
-		this.index = 0;
-		this.speed = 0;
-		this.errors = 0;
-		this.lastTypedChar = null;
-		this.targetChar = null;
-		this.startTime = null;
-		this.endTime = null;
-		this.DOM = {};
-	}
-
-	setActiveChar() {
+	setActiveChar(): void {
 		const currentNode = this.DOM.words.getElementsByTagName(TagNames.Span)[
 			this.index
 		];
 
 		if (this.index !== 0) {
-			const previousIndex = this.index - 1;
-			const previousNode = this.DOM.words.getElementsByTagName(TagNames.Span)[
-				previousIndex
-			];
+			const previousIndex: number = this.index - 1;
+			const previousNode: Element = this.DOM.words.getElementsByTagName(
+				TagNames.Span
+			)[previousIndex];
 
 			previousNode.classList.remove(ClassNames.Active);
 		}
@@ -67,28 +60,28 @@ export default class TypingTest {
 		currentNode.classList.add(ClassNames.Active);
 	}
 
-	setTargetChar() {
-		const targetChar = this.letters[this.index];
+	setTargetChar(): void {
+		const targetChar: string = this.letters[this.index];
 
 		this.targetChar = keyCode(targetChar);
 		this.setActiveChar();
 	}
 
-	cacheDOM() {
+	cacheDOM(): void {
 		this.DOM.words = document.querySelector(".words");
 		this.DOM.indicators = document.querySelector(".indicators");
 	}
 
-	renderWords() {
-		const tag = "span";
-		const html = `${this.letters
-			.map((val: string, i: number) => createTag(tag, val, i))
+	renderWords(): void {
+		const TAG_SPAN: string = "span";
+		const html: string = `${this.letters
+			.map((val: string, i: number) => createTag(TAG_SPAN, val, i))
 			.join("")}`;
 
 		this.DOM.words.innerHTML = html;
 	}
 
-	progress() {
+	progress(): void {
 		const userSelectedCorrectChar = this.lastTypedChar === this.targetChar;
 
 		if (userSelectedCorrectChar) {
@@ -98,9 +91,11 @@ export default class TypingTest {
 		}
 	}
 
-	validateChar() {
-		const targetSpan = this.DOM.words.getElementsByTagName("span")[this.index];
-		const wordsLength = this.letters.length - 1;
+	validateChar(): void {
+		const targetSpan: Element = this.DOM.words.getElementsByTagName("span")[
+			this.index
+		];
+		const wordsLength: number = this.letters.length - 1;
 
 		targetSpan.setAttribute("style", "color: #a6a8be");
 
@@ -112,36 +107,40 @@ export default class TypingTest {
 		}
 	}
 
-	invalidateChar() {
-		const targetSpan = this.DOM.words.getElementsByTagName("span")[this.index];
-		const errorIndicator = this.DOM.indicators.querySelector(
+	invalidateChar(): void {
+		const targetSpan: Element = this.DOM.words.getElementsByTagName("span")[
+			this.index
+		];
+		const errorIndicator: Element = this.DOM.indicators.querySelector(
 			`${ClassNames.ErrorsWrapper} ${ClassNames.Value}`
 		);
 
-		this.errors += 1;
-		errorIndicator.innerHTML = this.errors;
+		this.errors[this.index] = true;
+		errorIndicator.innerHTML = Object.keys(this.errors).length.toString();
 		targetSpan.classList.add("error");
 	}
 
-	endGame() {
+	endGame(): void {
 		this.endTime = Date.now();
-		const endTime = timeInMins(this.startTime, this.endTime);
-		const charCount = this.letters.length;
-		const result = wpm(endTime, charCount, this.errors);
 
+		const endTime: number = timeInMins(this.startTime, this.endTime);
+		const charCount: number = this.letters.length;
+		const errCount: number = Object.keys(this.errors).length;
+		const result: string = wpm(endTime, charCount, errCount).toString();
 		const speedIndicator = this.DOM.indicators.querySelector(
 			`${ClassNames.SpeedWrapper} ${ClassNames.Value}`
 		);
+
 		speedIndicator.innerHTML = result;
 	}
 
-	startTimer() {
+	startTimer(): void {
 		if (this.startTime === null) {
 			this.startTime = Date.now();
 		}
 	}
 
-	enqueue(event: any) {
+	enqueue(event: any): void {
 		this.lastTypedChar = event.keyCode;
 
 		if (this.startTime === null) {
@@ -151,22 +150,22 @@ export default class TypingTest {
 		this.progress();
 	}
 
-	getWords() {
+	getWords(): Promise<string[] | void> {
 		return getQuote().then((res: any) => {
-			const letters = res.attributes.text
+			const letters: string[] = res.attributes.text
 				.toLowerCase()
-				.replace(/[.,'\\/#!$%\\^&\\*;:{}=\-_`~()]/g, "")
+				.replace(/[.,'\\/#!$%\\^&\\*;:{}=\-_`~()?]/g, "")
 				.split("");
 			this.letters = letters;
 		});
 	}
 
-	keypressListener = (callback: any) => {
-		const EVENT_KEYDOWN = "keydown";
-		return document.addEventListener(EVENT_KEYDOWN, (event) => callback(event));
+	keypressListener = (callback: any): void => {
+		const EVENT_KEYDOWN: string = "keydown";
+		document.addEventListener(EVENT_KEYDOWN, (event) => callback(event));
 	};
 
-	init() {
+	init(): void {
 		this.getWords().then(() => {
 			this.cacheDOM();
 			this.renderWords();
