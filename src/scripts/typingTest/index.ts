@@ -14,9 +14,9 @@ interface KeyError {
 
 // TODO: Use CSS modules.
 enum ClassNames {
-	ErrorsWrapper = ".indicators__errors-wrapper",
-	SpeedWrapper = ".indicators__speed-wrapper",
-	Value = ".indicators__value",
+	ErrorsWrapper = ".typing-test__errors-wrapper",
+	SpeedWrapper = ".typing-test__speed-wrapper",
+	Value = ".typing-test__value",
 	Active = "active",
 }
 
@@ -68,8 +68,8 @@ export default class TypingTest {
 	}
 
 	cacheDOM(): void {
-		this.DOM.words = document.querySelector(".words");
-		this.DOM.indicators = document.querySelector(".indicators");
+		this.DOM.words = document.querySelector(".typing-test__words");
+		this.DOM.indicators = document.querySelector(".typing-test__indicators");
 	}
 
 	renderWords(): void {
