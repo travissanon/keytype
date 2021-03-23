@@ -1,0 +1,74 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap");
+:root {
+  --blue: #97bafa;
+  --red: #DB5461;
+  --black: #232a28;
+  --spacing-01: 0.625rem;
+  --spacing-02: 1.25rem;
+  --size-03: 45rem;
+  --font-md: 2rem;
+}
+
+/* this file is loaded by index.html and styles the page */
+.typing-test {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+.typing-test__container {
+  margin: var(--spacing-02);
+}
+
+.typing-test__indicators {
+  max-width: var(--size-03);
+  margin: var(--spacing-01) 0;
+}
+
+.typing-test__indicators-container {
+  max-width: var(--size-03);
+  margin: var(--spacing-01) 0;
+}
+
+.typing-test__words {
+  max-width: var(--size-03);
+  margin: var(--spacing-01) 0;
+}
+
+.typing-test__words-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin: var(--spacing-01) 0;
+  max-width: var(--size-03);
+}
+
+.typing-test span {
+  color: var(--black);
+  font-family: 'Roboto Mono', monospace;
+  font-size: var(--font-md);
+}
+
+.active {
+  background: var(--blue);
+}
+
+.error {
+  background: var(--red);
+}
+/*# sourceMappingURL=style.css.map */

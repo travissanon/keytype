@@ -1,47 +1,69 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
 
+:root {
+  // Colors
+  --blue: #97bafa;
+  --red: #DB5461;
+  --black: #232a28;
+
+  // Spacing
+  --spacing-01: 0.625rem;
+  --spacing-02: 1.25rem;
+
+  // Content size
+  --size-03: 45rem; 
+
+  // Font size
+  --font-md: 2rem;
+}
+
 /* this file is loaded by index.html and styles the page */
-#typing-test {
+.typing-test {
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
-  width: 100vw;
-}
-
-.indicators__container {
-  max-width: 720px;
-  margin: 10px 0;
-}
-
-.indicators {
-  max-width: 720px;
-  margin: 10px 0;
-}
-
-.words__container {
-  display: flex;
+  justify-content: center;
   align-items: center;
-  margin: 10px 0;
-  max-width: 720px;
-}
+  height: 100vh;
+  width: 100vw;
 
-.words {
-  max-width: 720px;
-  margin: 10px 0;
-}
+  &__container {
+    margin: var(--spacing-02);
+  }
+  
+  &__indicators {
+    max-width: var(--size-03);
+    margin: var(--spacing-01) 0;
 
-span {
-  font-size: 32px;
-  font-family: 'Roboto Mono', monospace;
-  color: #232a28;
+    &-container {
+      max-width: var(--size-03);
+      margin: var(--spacing-01) 0;
+    }
+  }
+  
+  &__words {
+    max-width: var(--size-03);
+    margin: var(--spacing-01) 0;
+
+    &-container {
+      display: flex;
+      align-items: center;
+      margin: var(--spacing-01) 0;
+      max-width: var(--size-03);
+    }
+  }
+  
+  span {
+    color: var(--black);
+    font-family: 'Roboto Mono', monospace;
+    font-size: var(--font-md);
+  }
 }
 
 .active {
-  background: #97bafa;
+  background: var(--blue);
 }
 
 .error {
-  background: #DB5461;
+  background: var(--red);
 }
