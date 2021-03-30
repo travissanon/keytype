@@ -68,8 +68,10 @@ export default class TypingTest {
 	}
 
 	cacheDOM(): void {
+		this.DOM.typingTest = document.querySelector(".typing-test");
 		this.DOM.words = document.querySelector(".typing-test__words");
 		this.DOM.indicators = document.querySelector(".typing-test__indicators");
+		this.DOM.restart = document.querySelector(".typing-test__restart");
 	}
 
 	renderWords(): void {
@@ -150,6 +152,27 @@ export default class TypingTest {
 		this.progress();
 	}
 
+	addOpacity(): void {
+		this.DOM.typingTest.classList.remove("opacity--1");
+		this.DOM.typingTest.classList.add("opacity--0");
+	}
+
+	removeOpacity(): void {
+		this.DOM.typingTest.classList.remove("opacity--0");
+		this.DOM.typingTest.classList.add("opacity--1");
+	}
+
+	async restart() {
+		this.index = 0;
+		this.addOpacity();
+
+		await this.getWords();
+		await this.renderWords();
+		await this.setTargetChar();
+
+		this.removeOpacity();
+	}
+
 	getWords(): Promise<string[] | void> {
 		return getQuote().then((res: any) => {
 			const letters: string[] = res.attributes.text
@@ -162,7 +185,11 @@ export default class TypingTest {
 
 	keypressListener = (callback: any): void => {
 		const EVENT_KEYDOWN: string = "keydown";
-		document.addEventListener(EVENT_KEYDOWN, (event) => callback(event));
+		document.addEventListener(EVENT_KEYDOWN, (event: any) => callback(event));
+	};
+
+	restartListener = (callback: any): void => {
+		this.DOM.restart.addEventListener("click", (event: any) => callback(event));
 	};
 
 	init(): void {
@@ -171,6 +198,7 @@ export default class TypingTest {
 			this.renderWords();
 			this.setTargetChar();
 			this.keypressListener(this.enqueue.bind(this));
+			this.restartListener(this.restart.bind(this));
 		});
 	}
 }

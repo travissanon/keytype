@@ -67,3 +67,15 @@
 .error {
   background: var(--red);
 }
+
+.opacity--0 {
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s;
+}
+
+.opacity--1 {
+  opacity: 1;
+  pointer-events: auto;
+  transition: all 0.2s;
+}
