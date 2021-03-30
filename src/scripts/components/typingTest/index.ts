@@ -136,6 +136,35 @@ export default class TypingTest {
 		speedIndicator.innerHTML = result;
 	}
 
+	async resetIndicators() {
+		const errorIndicator: Element = this.DOM.indicators.querySelector(
+			`${ClassNames.ErrorsWrapper} ${ClassNames.Value}`
+		);
+		const speedIndicator = this.DOM.indicators.querySelector(
+			`${ClassNames.SpeedWrapper} ${ClassNames.Value}`
+		);
+
+		this.speed = 0;
+		this.errors = {};
+
+		errorIndicator.innerHTML = Object.keys(this.errors).length.toString();
+		speedIndicator.innerHTML = "0";
+	}
+
+	async restartGame() {
+		this.index = 0;
+		this.startTime = null;
+
+		this.addOpacity();
+		this.resetIndicators();
+
+		await this.getWords();
+		await this.renderWords();
+		await this.setTargetChar();
+
+		this.removeOpacity();
+	}
+
 	startTimer(): void {
 		if (this.startTime === null) {
 			this.startTime = Date.now();
@@ -160,17 +189,6 @@ export default class TypingTest {
 	removeOpacity(): void {
 		this.DOM.typingTest.classList.remove("opacity--0");
 		this.DOM.typingTest.classList.add("opacity--1");
-	}
-
-	async restart() {
-		this.index = 0;
-		this.addOpacity();
-
-		await this.getWords();
-		await this.renderWords();
-		await this.setTargetChar();
-
-		this.removeOpacity();
 	}
 
 	getWords(): Promise<string[] | void> {
@@ -198,7 +216,7 @@ export default class TypingTest {
 			this.renderWords();
 			this.setTargetChar();
 			this.keypressListener(this.enqueue.bind(this));
-			this.restartListener(this.restart.bind(this));
+			this.restartListener(this.restartGame.bind(this));
 		});
 	}
 }
