@@ -132,8 +132,13 @@ export default class TypingTest {
 		const speedIndicator = this.DOM.indicators.querySelector(
 			`${ClassNames.SpeedWrapper} ${ClassNames.Value}`
 		);
+		const currentNode = this.DOM.words.getElementsByTagName(TagNames.Span)[
+			this.index
+		];
 
 		speedIndicator.innerHTML = result;
+		currentNode.classList.remove(ClassNames.Active);
+		currentNode.classList.add("cursor-end");
 	}
 
 	async resetIndicators() {
@@ -199,6 +204,14 @@ export default class TypingTest {
 				.split("");
 			this.letters = letters;
 		});
+	}
+
+	togglePunctuation() {
+		console.log(this.letters);
+	}
+
+	toggleCapitalization() {
+		console.log(this.letters);
 	}
 
 	keypressListener = (callback: any): void => {
