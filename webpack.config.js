@@ -14,6 +14,10 @@ module.exports = {
             exclude: /node_modules/,
         },
         {
+            test: /\.svg$/,
+            loader: 'svg-inline-loader'
+        },
+        {
             test: /\.(scss|css)$/,
             use: [
                 // Creates `style` nodes from JS strings
@@ -48,4 +52,11 @@ module.exports = {
         filename: "bundle.js",
         path: path.resolve(__dirname, "dist"),
     },
+    devServer: {
+        static: {
+          directory: path.join(__dirname, 'dist'),
+        },
+        compress: true,
+        port: 8080,
+      },
 };

@@ -9,7 +9,8 @@
     "lint": "eslint -c './.eslintrc' --fix './src/**/*.ts'",
     "ts-init": "tsc --init",
     "build": "webpack",
-    "mode-dev": "webpack --mode=development"
+    "build-dev": "webpack --mode=development",
+    "start": "webpack serve --open"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.1",
@@ -25,10 +26,12 @@
     "sass": "^1.32.8",
     "sass-loader": "^11.0.1",
     "style-loader": "^2.0.0",
+    "svg-inline-loader": "^0.8.2",
     "ts-loader": "^8.0.17",
     "typescript": "^4.2.2",
-    "webpack": "^5.24.3",
-    "webpack-cli": "^4.5.0"
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.7.4"
   },
   "dependencies": {
     "@types/styled-components": "^5.1.9",
